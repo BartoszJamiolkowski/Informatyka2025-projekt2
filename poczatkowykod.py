@@ -1,82 +1,116 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jan 11 02:12:42 2026
+
+@author: PC
+"""
+
 import sys
-from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
+from PyQt5.QtWidgets import ( QApplication, QGraphicsView, QGraphicsScene,QGraphicsRectItem, QGraphicsTextItem)
 from PyQt5.QtGui import QBrush, QPen
 from PyQt5.QtCore import Qt
 
-# ===================== MODEL =====================
-class Tank:
-    def __init__(self, name, level):
-        self.name = name
-        self.level = level  # % napełnienia
+class Zbiornik:
+    def __init__(self, nazwa, poziom):
+        self.nazwa = nazwa  # nazwa zbiornika
+        self.poziom = poziom  # poziom napełnienia w %
 
-class Process:
+class Proces:
     def __init__(self):
-        #poczatkowy poziom i zbioniki
-        self.tanks = [Tank("T1", 70),Tank("T2", 50),Tank("T3", 40),Tank("T4", 30)]
+        self.zbiorniki = [Zbiornik("Z1", 70),Zbiornik("Z2", 50),Zbiornik("Z3", 40),Zbiornik("Z4", 30)]
 
-# ===================== SCENA =====================
-class PlantScene(QGraphicsScene):
-    def __init__(self, process):
-        super().__init__(0, 0, 1000, 500)
-        self.p = process
-        self.tank_pos = [(100, 250), (300, 300), (500, 350), (700, 400)]
-        self.tank_w = 60
-        self.tank_h = 120
-        self.draw_all()
+class ScenaInstalacji(QGraphicsScene):
+    def __init__(self, proces):
+        super().__init__(0, 0, 1000, 500) #rozmiar pola 
 
-    def outlet(self, x, y):
-        return x + self.tank_w, y
+        self.proces = proces
 
-    def inlet(self, x, y):
+        self.pozycje_zbiornikow = [(100, 250),(300, 300),(500, 350),(700, 400)]
+
+        #rozmiar zbironikow 
+        self.szerokosc_zbiornika = 60
+        self.wysokosc_zbiornika = 120
+
+        self.rysuj_wszystko()
+
+
+    # punkt wyjścia rury od zbiornika
+    def wyjscie_rury(self, x, y):
+        return x + self.szerokosc_zbiornika, y - 8
+
+
+    # punkt wejścia rury do zbiornika
+    def wejscie(self, x, y):
         return x, y - 20
 
-    def draw_all(self):
-        self.draw_tanks()
-        self.draw_pipes()
 
-    def draw_pipes(self):
-        pen = QPen(Qt.black, 4)
-        for i in range(3):
-            x1, y1 = self.tank_pos[i]
-            x2, y2 = self.tank_pos[i + 1]
-            sx, sy = self.outlet(x1, y1)
-            ex, ey = self.inlet(x2, y2)
-            self.addLine(sx, sy, sx, ey, pen)  # pionowa część
-            self.addLine(sx, ey, ex, ey, pen)  # pozioma część
+    def rysuj_wszystko(self):
+        self.rysuj_zbiorniki()
+        self.rysuj_rury()
 
-    def draw_tank(self, tank, x, y):
-        # ramka zbiornika
-        frame = QGraphicsRectItem(x, y - self.tank_h, self.tank_w, self.tank_h)
-        frame.setPen(QPen(Qt.black, 2))
-        self.addItem(frame)
 
-        # ciecz
-        h = max(0, tank.level * 1.2)
-        liquid = QGraphicsRectItem(x, y - h, self.tank_w, h)
-        liquid.setBrush(QBrush(Qt.blue))
-        self.addItem(liquid)
+    def rysuj_rury(self):
+        pioro = QPen(Qt.black, 4)
 
-        # tekst
-        txt = QGraphicsTextItem(f"{tank.name}\n{tank.level:.0f}%")
-        txt.setPos(x - 5, y + 5)
-        self.addItem(txt)
+        for i in range(len(self.pozycje_zbiornikow) - 1):
+            x1, y1 = self.pozycje_zbiornikow[i]
+            x2, y2 = self.pozycje_zbiornikow[i + 1]
 
-    def draw_tanks(self):
-        for tank, (x, y) in zip(self.p.tanks, self.tank_pos):
-            self.draw_tank(tank, x, y)
+            start_x, start_y = self.wyjscie_rury(x1, y1)
+            koniec_x, koniec_y = self.wejscie(x2, y2)
 
-# ===================== WIDOK =====================
-class PlantView(QGraphicsView):
-    def __init__(self, process):
+            punkt_posredni_x = start_x + 40
+
+            self.addLine(start_x, start_y, punkt_posredni_x, start_y, pioro)
+            self.addLine(punkt_posredni_x, start_y, punkt_posredni_x, koniec_y, pioro)
+            self.addLine(punkt_posredni_x, koniec_y, koniec_x, koniec_y, pioro)
+
+
+    def rysuj_zbiornik(self, zbiornik, x, y):
+        ramka = QGraphicsRectItem(
+            x,
+            y - self.wysokosc_zbiornika,
+            self.szerokosc_zbiornika,
+            self.wysokosc_zbiornika
+        )
+        ramka.setPen(QPen(Qt.black, 2))
+        self.addItem(ramka)
+
+        wysokosc_cieczy = zbiornik.poziom * 1.2
+        ciecz = QGraphicsRectItem(
+            x,
+            y - wysokosc_cieczy,
+            self.szerokosc_zbiornika,
+            wysokosc_cieczy
+        )
+        ciecz.setBrush(QBrush(Qt.blue))
+        self.addItem(ciecz)
+
+        opis = QGraphicsTextItem(f"{zbiornik.nazwa}\n{zbiornik.poziom}%")
+        opis.setPos(x - 5, y + 5)
+        self.addItem(opis)
+
+
+    def rysuj_zbiorniki(self):
+        for zbiornik, (x, y) in zip(self.proces.zbiorniki, self.pozycje_zbiornikow):
+            self.rysuj_zbiornik(zbiornik, x, y)
+
+
+class WidokInstalacji(QGraphicsView):
+    def __init__(self, proces):
         super().__init__()
-        self.scene = PlantScene(process)
-        self.setScene(self.scene)
+        self.setScene(ScenaInstalacji(proces))
 
-# ===================== OKNO GŁÓWNE =====================
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    process = Process()
-    view = PlantView(process)
-    view.resize(1050, 550)
-    view.show()
-    sys.exit(app.exec_())
+    aplikacja = QApplication(sys.argv)
+
+    proces = Proces()
+    widok = WidokInstalacji(proces)
+
+    widok.resize(1050, 550)
+    widok.show()
+
+    sys.exit(aplikacja.exec_())
+
+
