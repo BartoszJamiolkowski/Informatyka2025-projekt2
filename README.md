@@ -1,6 +1,7 @@
 # Informatyka2025-projekt2
 Symulacja Systemu Kaskadowego Zbiorników
-Aplikacja desktopowa stworzona w języku Python z wykorzystaniem biblioteki PyQt5. Projekt symuluje proces przepływu cieczy w układzie kaskadowym, uwzględniając dynamikę temperatur, działanie pompy oraz proces podgrzewania.
+Aplikacja desktopowa stworzona w języku Python z wykorzystaniem biblioteki PyQt5. 
+Projekt symuluje proces przepływu cieczy w układzie kaskadowym, uwzględniając dynamikę temperatur, działanie pompy oraz proces podgrzewania.
 
 Funkcje Systemu
 Modelowanie Fizyczne: Realistyczne obliczenia objętości cieczy oraz temperatury mieszania (średnia ważona).
