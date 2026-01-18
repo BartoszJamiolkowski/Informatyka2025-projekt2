@@ -4,18 +4,18 @@ Aplikacja desktopowa w Pythonie symulująca przepływ cieczy i temperatury pomi�
 
 Funkcjonalności
 
-4 zbiorniki z określoną pojemnością
+*4 zbiorniki z określoną pojemnością
 
-Przepływ cieczy pomiędzy zbiornikami (tryb normalny i tryb powrotu)
+*Przepływ cieczy pomiędzy zbiornikami (tryb normalny i tryb powrotu)
 
-Pompa uruchamiająca obieg powrotny
+*Pompa uruchamiająca obieg powrotny
 
-Grzałka podnosząca temperaturę cieczy w zbiorniku 3
+*Grzałka podnosząca temperaturę cieczy w zbiorniku 3
 
-Dynamiczna zmiana koloru cieczy w zależności od temperatury
+*Dynamiczna zmiana koloru cieczy w zależności od temperatury
 
-Rury wizualizujące przepływ
+*Rury wizualizujące przepływ
 
-Raport aktualnego stanu zbiorników (poziom i temperatura)
+*Raport aktualnego stanu zbiorników (poziom i temperatura)
 
-Przełączanie widoków (symulacja / raport)
+*Przełączanie widoków (symulacja / raport)
