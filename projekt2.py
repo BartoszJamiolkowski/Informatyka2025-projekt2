@@ -67,7 +67,7 @@ class Pompa:
 class Grzalka:
     def __init__(self, x, y, width=40):
         self.x, self.y, self.width = x, y, width
-        # self.czy_grzeje = True  # Możesz zostawić lub usunąć
+         self.czy_grzeje = True  # Możesz zostawić lub usunąć
 
     def draw(self, painter):
         # kolor grzalki 
